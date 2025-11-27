@@ -3,185 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PRIMA Studio</title>
+    <title>PRIMA CRM</title>
     
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
-        body {
-            background-color: #000000;
-            color: #ffffff;
-            font-family: system-ui, -apple-system, sans-serif;
-            overflow: hidden;
-            margin: 0;
-            padding: 0;
-            touch-action: manipulation; /* Улучшает отклик на телефоне */
-        }
-        /* Анимация загрузки */
-        .loader {
-            border: 3px solid #333;
-            border-top: 3px solid #3b82f6;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        body { background-color: #18181b; color: #fff; font-family: -apple-system, sans-serif; margin: 0; overflow: hidden; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+        .glass { background: rgba(39, 39, 42, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .btn-press:active { transform: scale(0.96); }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
-<script type="importmap">
-{
-  "imports": {
-    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0",
-    "react": "https://aistudiocdn.com/react@^19.2.0",
-    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.555.0",
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/"
-  }
-}
-</script>
 </head>
 <body>
-
-    <div id="root">
-        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh;">
-            <div class="loader"></div>
-            <p style="margin-top:20px; color:#666;">Запуск PRIMA...</p>
-        </div>
-    </div>
+    <div id="root"></div>
 
     <script type="text/babel">
-        // Безопасное получение переменных React
         const { useState, useEffect } = React;
-        
-        function App() {
-            const [userName, setUserName] = useState('Гость');
-            const [activeTab, setActiveTab] = useState('home');
+        const ADMIN_IDS = [957837867];
 
-            useEffect(() => {
-                // Пытаемся инициализировать иконки, если библиотека загрузилась
-                if (window.lucide) window.lucide.createIcons();
+        const Icons = {
+            Grid: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="7" height="7" x="3" y="3" rx="1" /><rect width="7" height="7" x="14" y="3" rx="1" /><rect width="7" height="7" x="14" y="14" rx="1" /><rect width="7" height="7" x="3" y="14" rx="1" /></svg>,
+            Calendar: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2" /><line x1="16" x2="16" y1="2" y2="6" /><line x1="8" x2="8" y1="2" y2="6" /><line x1="3" x2="21" y1="10" y2="10" /></svg>,
+            Clock: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
+            Book: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 1-4 4v14a3 3 0 0 0 3-3h7z"/></svg>,
+            User: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+            Eye: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>,
+            Play: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>,
+            Check: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>,
+            ArrowLeft: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+        };
 
-                // Инициализация Телеграма
-                if (window.Telegram && window.Telegram.WebApp) {
-                    const tg = window.Telegram.WebApp;
-                    tg.ready();
-                    tg.expand(); // Раскрыть на весь экран
-                    
-                    // Красим шапку телеграма в черный
-                    try { tg.setHeaderColor('#000000'); } catch(e) {}
-
-                    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                        setUserName(tg.initDataUnsafe.user.first_name);
-                    }
-                }
-            }, []);
-
-            // Компоненты иконок (SVG) вручную, чтобы точно не сломалось
-            const IconHome = () => (
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            );
-            const IconCamera = () => (
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
-            );
-            const IconUser = () => (
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            );
-            const IconZap = () => (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-            );
-
+        const StudioScreen = () => {
+            const [selectedSites, setSelectedSites] = useState(['Chaturbate', 'Stripchat']);
+            const toggleSite = (id) => {
+                if (selectedSites.includes(id)) setSelectedSites(selectedSites.filter(s => s !== id));
+                else setSelectedSites([...selectedSites, id]);
+            };
+            const sites = [
+                { id: 'Chaturbate', letter: 'C', color: 'text-yellow-500' },
+                { id: 'Stripchat', letter: 'S', color: 'text-red-500' },
+                { id: 'CamSoda', letter: 'C', color: 'text-blue-500' },
+                { id: 'Cum4K', letter: 'C', color: 'text-pink-500' },
+                { id: 'Jasmin', letter: 'J', color: 'text-orange-400' },
+            ];
             return (
-                <div className="flex flex-col h-screen bg-black text-white">
-                    
-                    {/* ОСНОВНОЙ КОНТЕНТ */}
-                    <div className="flex-1 overflow-y-auto p-4 pb-24">
-                        
-                        {/* Экран: Главная */}
-                        {activeTab === 'home' && (
-                            <div className="space-y-6 animate-fade-in">
-                                <header className="flex justify-between items-center mt-2">
-                                    <h1 className="text-2xl font-bold tracking-tight">PRIMA <span className="text-blue-500">APP</span></h1>
-                                    <div className="bg-zinc-800 p-2 rounded-full border border-zinc-700">
-                                        <IconUser />
-                                    </div>
-                                </header>
-
-                                <div className="bg-gradient-to-br from-blue-900 via-blue-950 to-black p-6 rounded-2xl border border-blue-800/50 shadow-lg shadow-blue-900/20">
-                                    <h2 className="text-xl font-bold mb-1">Привет, {userName}!</h2>
-                                    <p className="text-blue-200 text-sm">Система работает стабильно.</p>
-                                </div>
-
-                                <div>
-                                    <h3 className="text-zinc-400 text-sm font-medium mb-3 uppercase tracking-wider">Инструменты</h3>
-                                    <div className="grid grid-cols-2 gap-3">
-                                        {['AI Чат', 'Генерация', 'История', 'Баланс'].map((item) => (
-                                            <button key={item} className="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 p-4 rounded-xl flex flex-col items-center justify-center gap-2 transition-all active:scale-95 h-24">
-                                                <div className="text-yellow-500"><IconZap /></div>
-                                                <span className="text-sm font-medium text-zinc-300">{item}</span>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Экран: Студия */}
-                        {activeTab === 'studio' && (
-                            <div className="flex flex-col items-center justify-center h-[60vh] text-zinc-500 space-y-4">
-                                <div className="w-20 h-20 bg-zinc-900 rounded-full flex items-center justify-center">
-                                    <IconCamera />
-                                </div>
-                                <p>Раздел Студия скоро появится</p>
-                            </div>
-                        )}
-
-                        {/* Экран: Профиль */}
-                        {activeTab === 'profile' && (
-                            <div className="flex flex-col items-center justify-center h-[60vh] text-zinc-500 space-y-4">
-                                <div className="w-20 h-20 bg-zinc-900 rounded-full flex items-center justify-center">
-                                    <IconUser />
-                                </div>
-                                <p>Настройки профиля</p>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* НИЖНЕЕ МЕНЮ (TAB BAR) */}
-                    <div className="fixed bottom-0 w-full bg-black/90 backdrop-blur-md border-t border-zinc-800 pb-safe">
-                        <div className="flex justify-around items-center py-3">
-                            <button onClick={() => setActiveTab('home')} className={`flex flex-col items-center space-y-1 w-16 ${activeTab === 'home' ? 'text-blue-500' : 'text-zinc-500'}`}>
-                                <IconHome />
-                                <span className="text-[10px]">Главная</span>
-                            </button>
-                            
-                            <button onClick={() => setActiveTab('studio')} className={`flex flex-col items-center space-y-1 w-16 ${activeTab === 'studio' ? 'text-blue-500' : 'text-zinc-500'}`}>
-                                <IconCamera />
-                                <span className="text-[10px]">Студия</span>
-                            </button>
-                            
-                            <button onClick={() => setActiveTab('profile')} className={`flex flex-col items-center space-y-1 w-16 ${activeTab === 'profile' ? 'text-blue-500' : 'text-zinc-500'}`}>
-                                <IconUser />
-                                <span className="text-[10px]">Профиль</span>
-                            </button>
+                <div className="space-y-6 animate-fade-in pb-24">
+                    <div className="glass p-4 rounded-2xl flex justify-between items-center">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-zinc-700 rounded-full flex items-center justify-center font-bold text-zinc-300"><Icons.User /></div>
+                            <div><h2 className="font-bold text-lg leading-none">PRIMA</h2><span className="text-xs text-zinc-500">Панель оператора</span></div>
                         </div>
-                        <div className="h-6"></div> 
+                        <div className="bg-zinc-800 px-3 py-1 rounded-lg border border-zinc-700 text-green-400 font-mono font-bold">$ 0</div>
                     </div>
-
+                    <div className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800 space-y-4">
+                        <div className="flex justify-between items-center"><span className="text-zinc-100 font-bold text-sm">🔐 Доступы</span><span className="text-[10px] bg-zinc-800 px-2 py-1 rounded text-zinc-400">Личные</span></div>
+                        {['Chaturbate', 'Stripchat', 'CamSoda'].map(site => (
+                            <div key={site} className="space-y-1">
+                                <div className="flex items-center gap-2 text-xs text-zinc-400"><div className="w-1.5 h-1.5 rounded-full bg-yellow-500"></div>{site}</div>
+                                <div className="flex gap-2">
+                                    <input type="text" value="Login123" disabled className="bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-xs text-zinc-500 flex-1" />
+                                    <div className="bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-xs text-zinc-500 w-24 flex justify-between items-center"><span>••••••</span><Icons.Eye /></div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <div>
+                        <h3 className="text-center text-zinc-500 text-xs mb-3 uppercase font-bold tracking-widest">Выбор площадок</h3>
+                        <div className="grid grid-cols-2 gap-3">
+                            {sites.map((site, idx) => {
+                                const active = selectedSites.includes(site.id);
+                                return (
+                                    <button key={site.id} onClick={() => toggleSite(site.id)} className={`relative rounded-xl p-3 flex flex-col items-center justify-center gap-1 h-20 border transition-all btn-press ${active ? 'bg-zinc-800 border-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.2)]' : 'bg-zinc-900 border-zinc-800 opacity-50 grayscale'} ${idx===4 ? 'col-span-2':''}`}>
+                                        {active && <div className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse"></div>}
+                                        <span className={`text-xl font-black ${site.color}`}>{site.letter}</span>
+                                        <span className={`text-[9px] uppercase font-bold ${active ? 'text-white' : 'text-zinc-600'}`}>{site.id}</span>
+                                    </button>
+                                )
+                            })}
+                        </div>
+                    </div>
+                    <button className="w-full bg-yellow-400 hover:bg-yellow-300 text-black py-4 rounded-xl font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(250,204,21,0.3)] btn-press">
+                        <Icons.Play /> Начать смену
+                    </button>
                 </div>
             );
-        }
+        };
 
-        // Запуск
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-    </script>
-</body>
-</html>
+        const PlanningScreen = () => {
+            const [view, setView] = useState('plan');
+            return (
+                <div className="space-y-6 animate-fade-in pb-24">
+                    <div className="flex justify-between items-center"><h1 className="text-2xl font-bold">Планирование</h1><span className="text-[10px] bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 px-2 py-0.5 rounded">ОПЕРАТОР</span></div>
+                    <div className="flex p-1 bg-zinc-900 rounded-xl border border-zinc-800">
+                        <button onClick={() => setView('plan')} className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${view === 'plan' ? 'bg-zinc-700 text-white' : 'text-zinc-500'}`}>Контент-план</button>
+                        <button onClick={() => setView('shift')} className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${view === 'shift' ? 'bg-zinc-700 text-white' : 'text-zinc-500'}`}>График</button>
+                    </div>
+                    <div className="bg-zinc-900 p-4 rounded-2xl border border-zinc-800">
+                        <div className="text-zinc-500 text-xs font-bold mb-3 uppercase">Ноябрь 2025</div>
+                        <div className="flex justify-between text-center">
+                            {['ПН 24','ВТ 25','СР 26','ЧТ 27','ПТ 28','СБ 29'].map((d,i) => (
+                                <div key={d} className={`p-1.5 rounded-lg min-w-[36px] ${i===2 ? 'bg-yellow-400 text-black font-bold' : 'text-zinc-600'}`}>
+                                    <div className="text-[9px]">{d.split(' ')[0]}</div><div className="text-lg">{d.split(' ')[1]}</div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    {view === 'plan' ? (
+                        <div className="space-y-3">
+                            <h3 className="font-bold text-zinc-400 text-sm">Задачи на сегодня</h3>
+                            {[{t:'Снять TikTok',s:'Тренд "Bad Habit"',d:false},{t:'Stories: Анонс',s:'За 30 мин',d:true},{t:'Фото сет',s:'Белье / Twitter',d:false}].map((task,i) => (
+                                <div key={i} className="bg-zinc-800/50 p-3 rounded-xl border border-zinc-700/50 flex items-center gap-3">
+                                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${task.d ? 'bg-yellow-400 border-yellow-400' : 'border-zinc-600'}`}>{task.d && <Icons.Check />}</div>
+                                    <div><div className={`text-sm font-bold ${task.d ? 'text-zinc-500 line-through' : 'text-white'}`}>{task.t}</div><div className="text-xs text-zinc-500">{task.s}</div></div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="bg-zinc-800 p-6 rounded-2xl border border-zinc-700 relative overflow-hidden">
+                             <div className="absolute top-4 right-4 text-zinc-600"><Icons.Clock /></div>
+                             <div className="inline-block bg-yellow-500/20 text-yellow-400 text-[10px] font-bold px-2 py-1 rounded mb-2">ЗАПЛАНИРОВАНО</div>
+                             <div className="text-4xl font-black text-white mb-1">18:00 <span className="text-lg text-zinc-500 font-normal">- 02:00</span></div>
+                             <div className="text-xs text-zinc-400 mb-6">Длительность: 8 часов</div>
+                             <div className="bg-zinc-900 p-3 rounded-lg border-l-4 border-yellow-400"><div className="text-[10px] text-zinc-500 uppercase font-bold">Заметка</div><div className="text-sm text-zinc-300">Тематический эфир</div></div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const HistoryScreen = () => (
+            <div className="space-y-4 animate-fade-in pb-24">
+                <h1 className="text-2xl font-bold">История</h1>
+                <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800">
+                    <div className="flex justify-between items-start mb-4">
+                        <div className="flex items-center gap-2 text-yellow-400 text-sm font-bold"><Icons.Clock /> 27.11.2025</div>
+                        <div className="text-right"><div className="text-yellow-400 font-black text-xl">$ 0.00</div><div className="text-[10px] text-zinc-500">0 tk</div></div>
+                    </div>
+                    <div className="flex gap-2 mb-4"><span className="bg-zinc-800 text-[10px] px-2 py-1 rounded text-zinc-400">Chaturbate</span></div>
+                    <div className="flex justify-between text-xs text-zinc-500 mb-4 border-t border-zinc-800 pt-3"><span>🕒 1 мин</span><span>01:43 - 01:44</span></div>
+                    <div className="bg-zinc-800/50 p-3 rounded-xl border border-zinc-700/50 text-xs italic text-zinc-400">"Смена была короткой. В следующий раз удели больше времени."</div>
+                </div>
+            </div>
+        );
+
+        const GuidesScreen = () => (
+            <div className="space-y-4 animate-fade-in pb-24">
+                <h1 className="text-2xl font-bold">База знаний</h1>
+                <div className="space-y-3">
+                    {[{t:'Техника "Приветствие"',l:'НОВИЧОК',c:'bg-green-500'},{t:'Геймификация целей',l:'PRO',c:'bg-purple-500'},{t:'Настройка OBS',l:'TECH',c:'bg-blue-500'}].map((g,i) => (
+                        <div key={i} className="bg-zinc-800 p-4 rounded-xl border border-zinc-700 flex justify-between items-center active:bg-zinc-700 btn-press">
+                            <div><h3
