@@ -7,73 +7,130 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Базовые стили */
+        /* СБРОС СТИЛЕЙ */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
         body { 
-            background-color: #000; 
-            color: #fff; 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #000000; 
+            color: #ffffff; 
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             margin: 0; 
-            height: 100vh; 
-            width: 100vw;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
-
-        /* Контейнер приложения (Эмуляция телефона на ПК) */
-        #app-container {
+            padding: 0;
             width: 100%;
-            height: 100%;
-            max-width: 480px;
-            background-color: #18181b;
+            height: 100vh;
+            overflow: hidden; /* Запрет прокрутки всей страницы */
             display: flex;
             flex-direction: column;
-            position: relative;
-            box-shadow: 0 0 50px rgba(255, 255, 255, 0.05);
         }
 
-        /* Скроллбар */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
+        /* ОСНОВНОЙ СКРОЛЛ */
+        main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            padding-bottom: 100px; /* Место для меню */
+        }
+
+        /* Скрываем скроллбар */
+        main::-webkit-scrollbar { display: none; }
+
+        /* ТАБЫ */
+        .tab-view { display: none; }
+        .tab-view.active { display: block; animation: fadeIn 0.3s ease; }
         
-        /* Стили элементов */
-        .glass { background: #27272a; border: 1px solid #3f3f46; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ЭЛЕМЕНТЫ */
+        .glass-panel { background: #18181b; border: 1px solid #27272a; border-radius: 16px; padding: 16px; }
         
-        .site-card { 
-            background: #18181b; 
-            border: 1px solid #3f3f46; 
-            transition: all 0.2s;
+        .nav-bar {
+            background: #09090b;
+            border-top: 1px solid #27272a;
+            padding-bottom: env(safe-area-inset-bottom);
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 50;
         }
-        .site-card.active { 
-            border-color: #eab308; 
-            background: #27272a; 
-            box-shadow: 0 0 15px rgba(234, 179, 8, 0.15);
-        }
-        .site-card.active .status-dot { background-color: #eab308; box-shadow: 0 0 8px #eab308; }
 
-        /* Табы (Экраны) */
-        .tab-content { 
-            display: none; 
-            height: 100%; 
-            overflow-y: auto; 
-            padding-bottom: 100px;
-        }
-        .tab-content.active { display: block; }
-
-        /* Навигация */
-        .nav-btn { color: #71717a; transition: all 0.2s; }
-        .nav-btn.active { color: #eab308; transform: translateY(-3px); }
-        .nav-btn.active svg { stroke: #eab308; stroke-width: 2.5; }
+        .nav-btn { color: #52525b; transition: 0.2s; }
+        .nav-btn.active { color: #eab308; }
         
-        /* Анимация нажатия */
-        .btn-press:active { transform: scale(0.96); }
+        .btn-primary {
+            background-color: #eab308;
+            color: black;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(234, 179, 8, 0.2);
+            transition: transform 0.1s;
+        }
+        .btn-primary:active { transform: scale(0.97); }
 
+        .site-card {
+            background: #18181b;
+            border: 1px solid #27272a;
+            border-radius: 12px;
+            height: 90px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+        .site-card.active {
+            border-color: #eab308;
+            background: #27272a;
+        }
     </style>
 </head>
 <body>
 
-    <div id="app-container">
+    <main id="tab-studio" class="tab-view active">
         
-        <main class="flex-1 overflow-hidden relative">
-            
-            <div id="view-
+        <div class="glass-panel flex justify-between items-center mb-6">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-zinc-800 rounded-full flex items-center justify-center border border-zinc-700 font-bold">K</div>
+                <div>
+                    <h2 class="font-bold text-lg leading-none">PRIMA</h2>
+                    <span class="text-xs text-zinc-400">Панель оператора</span>
+                </div>
+            </div>
+            <button onclick="alert('SOS отправлен!')" class="w-10 h-10 rounded-xl bg-red-900/20 border border-red-500/50 text-red-500 flex items-center justify-center">⚠️</button>
+        </div>
+
+        <div id="section-pre" class="space-y-6">
+            <div class="glass-panel">
+                <div class="text-xs text-zinc-500 font-bold mb-2 uppercase">Цель на смену ($)</div>
+                <input type="number" id="goal-input" value="100" class="w-full bg-black border border-zinc-800 rounded-xl p-4 text-center text-3xl font-bold text-white outline-none focus:border-yellow-500">
+            </div>
+
+            <div class="glass-panel text-center">
+                <p class="text-xs text-zinc-500">Перед запуском проверьте VPN и OBS</p>
+            </div>
+
+            <button onclick="startShift()" class="btn-primary">
+                ▶ НАЧАТЬ СМЕНУ
+            </button>
+        </div>
+
+        <div id="section-active" class="hidden space-y-6">
+            <div class="glass-panel text-center">
+                <div class="flex justify-between text-xs text-zinc-500 mb-2"><span>Прогресс</span><span id="goal-text">Цель: $100</span></div>
+                <div class="w-full bg-black h-3 rounded-full overflow-hidden mb-3">
+                    <div id="progress-bar" class="bg-yellow-500 h-full w-0 transition-all duration-500"></div>
+                </div>
+                <div class="text-4xl font-black text-white">$ <span id="revenue-display">0.00</span></div>
+            </div>
+
+            <div class="glass-panel">
+                <div class="text-xs text-zinc-500 font-bold mb-3 uppercase">Калькулятор Токенов</div>
+                <div class="flex gap-3 mb-3">
+                    <input type="number" id="tk-input" placeholder="TK" class="bg-black border border-zinc-800 rounded-xl p-3 text-white w-1/2 text-center font-bold outline-none">
+                    <div class="w-1/2 bg-zinc-800 rounded-xl border border-zinc-700 flex items-center justify-center text-green-400 font-bold" id="usd-preview">$ 0.00</div>
+                </div>
+                <button onclick="addMoney()" class="w-full bg-zinc-800 py-3 rounded-xl text-xs font-bold hover:bg-zinc-700 active:scale-95 transition
