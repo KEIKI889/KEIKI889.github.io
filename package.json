@@ -1,0 +1,24 @@
+{
+  "name": "prima-studio-app",
+  "version": "1.0.0",
+  "description": "Telegram Mini App for PRIMA Webcam Studio management",
+  "main": "index.tsx",
+  "scripts": {
+    "start": "serve ."
+  },
+  "dependencies": {
+    "@google/genai": "^1.30.0",
+    "lucide-react": "^0.555.0",
+    "parse": "^5.0.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/parse": "^3.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "serve": "^14.0.0",
+    "typescript": "^5.0.0"
+  }
+}
