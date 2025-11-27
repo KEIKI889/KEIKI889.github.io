@@ -203,21 +203,29 @@ export const Studio: React.FC<StudioProps> = ({ user, activeShift, onStartShift,
 
              <div className="space-y-4">
                 <p className="text-sm text-zinc-400 font-bold mb-2 border-b border-zinc-800 pb-2">Введите заработок (токены):</p>
-                {activeShift.platforms.filter(p => p.isActive).map(p => (
-                  <div key={p.name}>
-                    <label className={`text-xs font-bold ml-1 mb-1 block ${PLATFORM_CONFIG[p.name].color}`}>{p.name}</label>
-                    <input
-                      type="number"
-                      pattern="[0-9]*"
-                      inputMode="numeric"
-                      placeholder="0"
-                      autoFocus={tokenInputs[p.name] === undefined} // Auto focus first input
-                      value={tokenInputs[p.name] || ''}
-                      onChange={(e) => setTokenInputs(prev => ({...prev, [p.name]: e.target.value}))}
-                      className="w-full bg-black border border-zinc-700 rounded-lg p-4 text-white focus:outline-none focus:border-[#FF9900] text-lg font-mono font-bold"
-                    />
-                  </div>
-                ))}
+                {activeShift.platforms.filter(p => p.isActive).map(p => {
+                  const config = PLATFORM_CONFIG[p.name];
+                  return (
+                    <div key={p.name}>
+                      <div className="flex items-center gap-2 mb-1">
+                         <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-black border border-current bg-[#111] ${config.color} ${config.border}`}>
+                            {config.initial}
+                         </div>
+                         <label className={`text-xs font-bold block ${config.color}`}>{p.name}</label>
+                      </div>
+                      <input
+                        type="number"
+                        pattern="[0-9]*"
+                        inputMode="numeric"
+                        placeholder="0"
+                        autoFocus={tokenInputs[p.name] === undefined} // Auto focus first input
+                        value={tokenInputs[p.name] || ''}
+                        onChange={(e) => setTokenInputs(prev => ({...prev, [p.name]: e.target.value}))}
+                        className="w-full bg-black border border-zinc-700 rounded-lg p-4 text-white focus:outline-none focus:border-[#FF9900] text-lg font-mono font-bold"
+                      />
+                    </div>
+                  );
+                })}
              </div>
              
              <button
