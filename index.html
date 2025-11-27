@@ -30,8 +30,7 @@
 
         /* Карточки */
         .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 16px; margin-bottom: 12px; }
-        .glass { background: rgba(24, 24, 27, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-color); }
-
+        
         /* Кнопки сайтов */
         .grid-sites { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
         .site-btn {
@@ -68,6 +67,22 @@
         .nav-item { background: none; border: none; color: #52525b; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; font-weight: bold; cursor: pointer; }
         .nav-item.active { color: var(--accent); }
         .nav-item svg { width: 22px; height: 22px; }
+
+        /* Стили Календаря (Новые) */
+        .calendar-day { 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            padding: 8px 4px; border-radius: 12px; min-width: 40px; cursor: pointer;
+        }
+        .calendar-day.active { background: #27272a; border: 1px solid #3f3f46; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        .calendar-day span { font-size: 10px; color: #71717a; text-transform: uppercase; font-weight: bold; }
+        .calendar-day h4 { font-size: 16px; font-weight: bold; color: white; margin: 2px 0; }
+        .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); margin-top: 4px; opacity: 0; }
+        .calendar-day.has-task .dot { opacity: 1; }
+
+        /* Стили Табов Планирования */
+        .plan-tabs { display: flex; background: #18181b; padding: 4px; border-radius: 12px; border: 1px solid #27272a; margin-bottom: 20px; }
+        .plan-tab { flex: 1; text-align: center; padding: 8px; font-size: 12px; font-weight: bold; color: #71717a; cursor: pointer; border-radius: 8px; transition: 0.2s; }
+        .plan-tab.active { background: #27272a; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 
         /* Модальное окно */
         .modal-overlay {
@@ -143,14 +158,64 @@
     </div>
 
     <div id="tab-plan" class="content no-scrollbar">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-            <h2 style="margin: 0; font-size: 20px;">Контент-план</h2>
-            <button onclick="addTask()" style="background: #27272a; border: 1px solid #333; color: white; border-radius: 8px; width: 30px; height: 30px; cursor: pointer;">+</button>
+        <h1 style="font-size: 24px; font-weight: bold; margin-bottom: 15px;">Планирование</h1>
+        
+        <div class="plan-tabs">
+            <div class="plan-tab active" onclick="switchPlanTab('content')">Контент-план</div>
+            <div class="plan-tab" onclick="switchPlanTab('schedule')">График смен</div>
         </div>
-        <div id="task-list"></div>
 
-        <h2 style="margin: 30px 0 15px; font-size: 20px;">История смен</h2>
-        <div id="history-list"></div>
+        <div class="card" style="padding: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <div style="display: flex; align-items: center; gap: 6px; font-weight: bold;">
+                    <i data-lucide="calendar" width="16"></i> Расписание
+                </div>
+                <div style="font-size: 10px; color: #71717a;">Ноябрь 2025</div>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between;">
+                <div class="calendar-day"><span>ПН</span><h4>24</h4><div class="dot"></div></div>
+                <div class="calendar-day has-task"><span>ВТ</span><h4>25</h4><div class="dot"></div></div>
+                <div class="calendar-day active has-task"><span>СР</span><h4>26</h4><div class="dot"></div></div>
+                <div class="calendar-day"><span>ЧТ</span><h4>27</h4><div class="dot"></div></div>
+                <div class="calendar-day"><span>ПТ</span><h4>28</h4><div class="dot"></div></div>
+                <div class="calendar-day"><span>СБ</span><h4>29</h4><div class="dot"></div></div>
+            </div>
+        </div>
+
+        <div id="plan-content-view">
+            <div class="card" style="position: relative; padding: 24px; overflow: hidden;">
+                <div style="position: absolute; top: 10px; right: 10px; opacity: 0.1;">
+                    <i data-lucide="video" width="60" height="60"></i>
+                </div>
+
+                <h2 style="font-size: 28px; font-weight: bold; margin: 0;">Среда</h2>
+                <p style="color: #71717a; margin-bottom: 20px;">26 ноября</p>
+
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 10px; font-weight: bold; color: #52525b; margin-bottom: 5px;">ТИП КОНТЕНТА</div>
+                    <span style="background: rgba(59, 130, 246, 0.2); color: #60a5fa; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: bold; border: 1px solid rgba(59, 130, 246, 0.3);">Видео контент</span>
+                </div>
+
+                <div style="margin-bottom: 25px;">
+                    <div style="font-size: 10px; font-weight: bold; color: #52525b; margin-bottom: 5px;">ЗАДАЧИ</div>
+                    <div style="color: #e4e4e7; font-size: 14px;">Reels, TikTok, Stories</div>
+                </div>
+
+                <button onclick="this.classList.toggle('completed')" style="display: flex; align-items: center; gap: 10px; background: transparent; border: none; color: #71717a; cursor: pointer; transition: 0.2s;">
+                    <div style="width: 20px; height: 20px; border: 2px solid #52525b; border-radius: 50%; display: flex; justify-content: center; align-items: center;">
+                        <div class="inner-dot" style="width: 10px; height: 10px; background: var(--accent); border-radius: 50%; opacity: 0;"></div>
+                    </div>
+                    <span style="font-size: 12px; font-weight: bold;">Отметить выполнение</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="plan-schedule-view" class="hidden">
+            <h3 style="font-size: 12px; font-weight: bold; color: #71717a; margin-bottom: 10px;">ИСТОРИЯ СТРИМОВ</h3>
+            <div id="history-list">
+                </div>
+        </div>
     </div>
 
     <div id="tab-cabinet" class="content no-scrollbar">
@@ -218,7 +283,6 @@
     
     // Загрузка из памяти телефона
     let shifts = JSON.parse(localStorage.getItem('shifts')) || [];
-    let tasks = JSON.parse(localStorage.getItem('tasks')) || ['Проверить свет', 'Настроить OBS'];
     let credentials = JSON.parse(localStorage.getItem('creds')) || {
         'Chaturbate': {l:'', p:''}, 'Stripchat': {l:'', p:''}, 
         'CamSoda': {l:'', p:''}, 'Cum4K': {l:'', p:''}, 'Jasmin': {l:'', p:''}
@@ -227,7 +291,6 @@
     // Инициализация при старте
     window.onload = () => {
         lucide.createIcons();
-        renderTasks();
         renderHistory();
         renderStats();
         renderCreds();
@@ -250,7 +313,7 @@
     }
 
     function requestFinish() {
-        // Останавливаем таймер ВИЗУАЛЬНО, но не сбрасываем данные пока
+        // Останавливаем таймер ВИЗУАЛЬНО
         clearInterval(timerInt);
         document.getElementById('modal-finish').classList.add('open');
     }
@@ -297,31 +360,23 @@
         alert('Смена сохранена!');
     }
 
-    // === ФУНКЦИИ ПЛАНА (ЗАДАЧИ) ===
-    function renderTasks() {
-        let html = '';
-        tasks.forEach((t, i) => {
-            html += `
-            <div style="background:#1a1a1a; padding:12px; border-radius:8px; border:1px solid #333; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-size:13px;">${t}</span>
-                <button onclick="delTask(${i})" style="background:none; border:none; color:#ef4444; font-weight:bold;">✕</button>
-            </div>`;
-        });
-        document.getElementById('task-list').innerHTML = html;
-    }
-
-    function addTask() {
-        let t = prompt("Новая задача:");
-        if(t) { tasks.push(t); localStorage.setItem('tasks', JSON.stringify(tasks)); renderTasks(); }
-    }
-
-    function delTask(i) {
-        tasks.splice(i, 1); localStorage.setItem('tasks', JSON.stringify(tasks)); renderTasks();
+    // === ФУНКЦИИ ПЛАНА ===
+    function switchPlanTab(tab) {
+        document.querySelectorAll('.plan-tab').forEach(el => el.classList.remove('active'));
+        event.target.classList.add('active');
+        
+        if (tab === 'content') {
+            document.getElementById('plan-content-view').classList.remove('hidden');
+            document.getElementById('plan-schedule-view').classList.add('hidden');
+        } else {
+            document.getElementById('plan-content-view').classList.add('hidden');
+            document.getElementById('plan-schedule-view').classList.remove('hidden');
+        }
     }
 
     function renderHistory() {
         let html = '';
-        if(shifts.length === 0) html = '<div style="text-align:center; color:#444; font-size:12px;">Нет завершенных смен</div>';
+        if(shifts.length === 0) html = '<div style="text-align:center; color:#444; font-size:12px; margin-top:20px;">Нет истории</div>';
         shifts.forEach(s => {
             html += `
             <div class="card" style="padding:12px; border-left: 3px solid #eab308; display:flex; justify-content:space-between; align-items:center;">
@@ -372,6 +427,12 @@
         btn.classList.add('active');
     }
 </script>
+
+<style>
+    /* Анимация кнопки выполнения */
+    button.completed .inner-dot { opacity: 1 !important; }
+    button.completed { color: #eab308 !important; }
+</style>
 
 </body>
 </html>
