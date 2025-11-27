@@ -11,14 +11,19 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .glass { background: #18181b; border: 1px solid #27272a; }
         
+        /* Центровка для ПК */
+        .mobile-container { max-width: 480px; margin: 0 auto; width: 100%; height: 100%; display: flex; flex-direction: column; border-left: 1px solid #27272a; border-right: 1px solid #27272a; }
+
         /* Кнопки и инпуты */
         .site-card { transition: all 0.2s; border: 1px solid #27272a; background: #18181b; }
         .site-card.active { border-color: #eab308; background: #27272a; box-shadow: 0 0 15px rgba(234, 179, 8, 0.1); }
         .site-card.active .status-dot { background-color: #eab308; box-shadow: 0 0 8px #eab308; }
         
-        /* Чекбокс */
-        .checkbox-wrapper input:checked + div { background-color: #eab308; border-color: #eab308; }
-        .checkbox-wrapper input:checked + div svg { display: block; }
+        /* Чекбокс - Исправленная версия */
+        .check-box { width: 24px; height: 24px; border-radius: 6px; border: 2px solid #52525b; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+        .check-row.active .check-box { background-color: #eab308; border-color: #eab308; }
+        .check-row.active .check-icon { display: block; }
+        .check-icon { display: none; color: black; }
         
         /* Табы */
         .tab-content { display: none; height: 100%; overflow-y: auto; padding-bottom: 120px; }
@@ -27,157 +32,176 @@
         /* Навигация */
         .nav-btn { color: #71717a; transition: all 0.2s; }
         .nav-btn.active { color: #eab308; transform: translateY(-2px); }
-
-        /* Анимации */
-        .pulse-red { animation: pulse-red 2s infinite; }
-        @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
     </style>
 </head>
 <body>
 
-    <main class="flex-1 overflow-y-auto p-4 no-scrollbar">
+    <div class="mobile-container">
+        <main class="flex-1 overflow-y-auto p-4 no-scrollbar relative">
 
-        <div id="view-studio" class="tab-content active space-y-6">
-            
-            <div class="glass p-4 rounded-2xl flex justify-between items-center">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-zinc-800 rounded-full flex items-center justify-center text-xl font-bold border border-zinc-700">K</div>
-                    <div>
-                        <h2 class="font-bold text-lg leading-none">PRIMA</h2>
-                        <span class="text-xs text-zinc-400">Панель оператора</span>
-                    </div>
-                </div>
-                <button onclick="sendPanic()" class="bg-red-900/30 border border-red-500/50 text-red-500 w-10 h-10 rounded-xl flex items-center justify-center active:scale-95">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                </button>
-            </div>
-
-            <div id="pre-shift-block" class="space-y-6">
+            <div id="view-studio" class="tab-content active space-y-6">
                 
-                <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-xs text-zinc-400 font-bold uppercase">Финансовая цель</span>
-                        <span class="text-yellow-500 text-xs font-bold">$</span>
-                    </div>
-                    <input type="number" id="goal-input" placeholder="100" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-white text-center text-xl font-bold outline-none focus:border-yellow-500" oninput="updateGoal()">
-                </div>
-
-                <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 space-y-3">
-                    <h3 class="text-xs text-zinc-500 uppercase font-bold mb-1">Чек-лист готовности</h3>
-                    
-                    <label class="checkbox-wrapper flex items-center gap-3 cursor-pointer">
-                        <input type="checkbox" class="hidden" onchange="checkStartReady()">
-                        <div class="w-5 h-5 rounded border-2 border-zinc-600 flex items-center justify-center"><svg class="hidden text-black w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><polyline points="20 6 9 17 4 12"/></svg></div>
-                        <span class="text-sm">VPN включен и стабилен</span>
-                    </label>
-                    
-                    <label class="checkbox-wrapper flex items-center gap-3 cursor-pointer">
-                        <input type="checkbox" class="hidden" onchange="checkStartReady()">
-                        <div class="w-5 h-5 rounded border-2 border-zinc-600 flex items-center justify-center"><svg class="hidden text-black w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><polyline points="20 6 9 17 4 12"/></svg></div>
-                        <span class="text-sm">OBS настроен (Битрейт OK)</span>
-                    </label>
-
-                    <label class="checkbox-wrapper flex items-center gap-3 cursor-pointer">
-                        <input type="checkbox" class="hidden" onchange="checkStartReady()">
-                        <div class="w-5 h-5 rounded border-2 border-zinc-600 flex items-center justify-center"><svg class="hidden text-black w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><polyline points="20 6 9 17 4 12"/></svg></div>
-                        <span class="text-sm">Игрушки подключены</span>
-                    </label>
-                </div>
-
-                <button id="btn-start" onclick="startShift()" disabled class="w-full bg-zinc-800 text-zinc-500 py-4 rounded-xl font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all opacity-50 cursor-not-allowed">
-                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                    Начать смену
-                </button>
-            </div>
-
-            <div id="active-shift-block" class="hidden space-y-6">
-                
-                <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 text-center">
-                    <div class="flex justify-between text-xs text-zinc-400 mb-2">
-                        <span>Заработано</span>
-                        <span id="goal-display">Цель: $100</span>
-                    </div>
-                    <div class="w-full bg-zinc-800 h-4 rounded-full overflow-hidden">
-                        <div id="goal-bar" class="bg-yellow-500 h-full w-0 transition-all duration-500 shadow-[0_0_10px_#eab308]"></div>
-                    </div>
-                    <div class="mt-2 text-2xl font-black text-white">$ <span id="current-revenue">0</span></div>
-                </div>
-
-                <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800">
-                    <h3 class="text-xs text-zinc-500 uppercase font-bold mb-3 flex items-center gap-2">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                        Конвертер Токенов
-                    </h3>
-                    <div class="flex gap-3">
-                        <input type="number" id="token-input" placeholder="TK" class="bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-white w-1/2 outline-none focus:border-yellow-500" oninput="calcTokens()">
-                        <div class="flex items-center justify-center text-zinc-500">➜</div>
-                        <div id="usd-result" class="bg-zinc-800 rounded-xl p-3 text-green-400 font-bold w-1/2 flex items-center justify-center border border-zinc-700">$ 0.00</div>
-                    </div>
-                    <button onclick="addRevenue()" class="w-full mt-2 bg-zinc-800 text-xs text-zinc-300 py-2 rounded-lg hover:bg-zinc-700">+ Добавить в выручку</button>
-                </div>
-
-                <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800">
-                    <h3 class="text-xs text-zinc-500 uppercase font-bold mb-3">База Фанатов ("Киты")</h3>
-                    <div class="flex gap-2 mb-2">
-                        <input id="member-search" type="text" placeholder="Поиск никнейма..." class="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-2 text-sm text-white outline-none">
-                        <button onclick="searchMember()" class="bg-yellow-500 text-black px-3 rounded-lg font-bold">🔍</button>
-                    </div>
-                    <div id="member-result" class="hidden bg-zinc-800 p-3 rounded-lg border border-zinc-700 text-sm">
+                <div class="glass p-4 rounded-2xl flex justify-between items-center">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-zinc-800 rounded-full flex items-center justify-center text-xl font-bold border border-zinc-700">K</div>
+                        <div>
+                            <h2 class="font-bold text-lg leading-none">PRIMA</h2>
+                            <span class="text-xs text-zinc-400">Панель оператора</span>
                         </div>
-                </div>
-
-                <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800">
-                    <h3 class="text-xs text-zinc-500 uppercase font-bold mb-2">Журнал передачи (Handover)</h3>
-                    <textarea id="handover-log" rows="3" placeholder="Важное для следующего оператора..." class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-sm text-white outline-none focus:border-yellow-500"></textarea>
-                </div>
-                
-                <div class="border-2 border-dashed border-zinc-700 rounded-xl p-4 text-center cursor-pointer hover:border-yellow-500 hover:text-yellow-500 text-zinc-500 transition-colors">
-                    <span class="text-xs font-bold">📸 ЗАГРУЗИТЬ СКРИНШОТ ОТЧЕТА</span>
-                    <input type="file" class="hidden">
-                </div>
-
-                <div class="bg-red-900/10 border border-red-500/30 p-4 rounded-xl text-center">
-                    <div id="shift-timer" class="text-3xl font-mono font-bold text-red-400 mb-2">00:00:00</div>
-                    <button onclick="endShift()" class="w-full bg-red-600 hover:bg-red-500 text-white py-3 rounded-xl font-black uppercase tracking-widest">
-                        ⏹ Завершить смену
+                    </div>
+                    <button onclick="sendPanic()" class="bg-red-900/20 border border-red-500/50 text-red-500 w-10 h-10 rounded-xl flex items-center justify-center active:scale-95 transition-transform">
+                        ⚠️
                     </button>
                 </div>
-            </div>
-        </div>
 
-        <div id="view-plan" class="tab-content space-y-6">
-            <h1 class="text-2xl font-bold">План</h1>
-            
-            <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800">
-                <h3 class="text-xs text-zinc-500 uppercase font-bold mb-3">Топ Операторов (Сегодня)</h3>
-                <div class="space-y-2">
-                    <div class="flex justify-between items-center bg-zinc-800/50 p-2 rounded-lg border border-yellow-500/30">
-                        <div class="flex items-center gap-2"><span class="text-lg">🥇</span> <span class="font-bold">Alice</span></div>
-                        <span class="text-green-400 font-bold">$420</span>
+                <div id="pre-shift-block" class="space-y-6 animate-fade">
+                    
+                    <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs text-zinc-400 font-bold uppercase">Финансовая цель</span>
+                            <span class="text-yellow-500 text-xs font-bold">$</span>
+                        </div>
+                        <input type="number" id="goal-input" placeholder="100" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-white text-center text-xl font-bold outline-none focus:border-yellow-500" oninput="updateGoal()">
                     </div>
-                    <div class="flex justify-between items-center bg-zinc-800/50 p-2 rounded-lg">
-                        <div class="flex items-center gap-2"><span class="text-lg">🥈</span> <span class="font-bold">Mike</span></div>
-                        <span class="text-green-400 font-bold">$310</span>
+
+                    <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 space-y-3">
+                        <h3 class="text-xs text-zinc-500 uppercase font-bold mb-1">Чек-лист готовности</h3>
+                        
+                        <div class="check-row flex items-center gap-3 cursor-pointer p-2 rounded-lg hover:bg-zinc-800 transition-colors" onclick="toggleCheck(this)">
+                            <div class="check-box"><svg class="check-icon w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><polyline points="20 6 9 17 4 12"/></svg></div>
+                            <span class="text-sm font-medium">VPN включен и стабилен</span>
+                        </div>
+                        
+                        <div class="check-row flex items-center gap-3 cursor-pointer p-2 rounded-lg hover:bg-zinc-800 transition-colors" onclick="toggleCheck(this)">
+                            <div class="check-box"><svg class="check-icon w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><polyline points="20 6 9 17 4 12"/></svg></div>
+                            <span class="text-sm font-medium">OBS настроен (Битрейт OK)</span>
+                        </div>
+
+                        <div class="check-row flex items-center gap-3 cursor-pointer p-2 rounded-lg hover:bg-zinc-800 transition-colors" onclick="toggleCheck(this)">
+                            <div class="check-box"><svg class="check-icon w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><polyline points="20 6 9 17 4 12"/></svg></div>
+                            <span class="text-sm font-medium">Игрушки подключены</span>
+                        </div>
                     </div>
-                    <div class="flex justify-between items-center bg-zinc-800/50 p-2 rounded-lg">
-                        <div class="flex items-center gap-2"><span class="text-lg">🥉</span> <span class="font-bold text-yellow-500">Вы</span></div>
-                        <span class="text-green-400 font-bold" id="leaderboard-me">$0</span>
+
+                    <button id="btn-start" onclick="startShift()" class="w-full bg-zinc-800 text-zinc-500 py-4 rounded-xl font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all" disabled style="opacity: 0.5; cursor: not-allowed;">
+                        ▶ Начать смену
+                    </button>
+                </div>
+
+                <div id="active-shift-block" class="hidden space-y-6">
+                    
+                    <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 text-center">
+                        <div class="flex justify-between text-xs text-zinc-400 mb-2">
+                            <span>Заработано</span>
+                            <span id="goal-display">Цель: $100</span>
+                        </div>
+                        <div class="w-full bg-zinc-800 h-4 rounded-full overflow-hidden">
+                            <div id="goal-bar" class="bg-yellow-500 h-full w-0 transition-all duration-500 shadow-[0_0_10px_#eab308]"></div>
+                        </div>
+                        <div class="mt-2 text-3xl font-black text-white">$ <span id="current-revenue">0</span></div>
+                    </div>
+
+                    <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800">
+                        <h3 class="text-xs text-zinc-500 uppercase font-bold mb-3">Конвертер Токенов</h3>
+                        <div class="flex gap-3">
+                            <input type="number" id="token-input" placeholder="TK" class="bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-white w-1/2 outline-none focus:border-yellow-500 text-center font-bold" oninput="calcTokens()">
+                            <div class="flex items-center justify-center text-zinc-500">➜</div>
+                            <div id="usd-result" class="bg-zinc-800 rounded-xl p-3 text-green-400 font-bold w-1/2 flex items-center justify-center border border-zinc-700">$ 0.00</div>
+                        </div>
+                        <button onclick="addRevenue()" class="w-full mt-2 bg-zinc-800 text-xs text-zinc-300 py-3 rounded-lg hover:bg-zinc-700 font-bold active:scale-95 transition-transform">+ Добавить в выручку</button>
+                    </div>
+
+                    <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800">
+                        <h3 class="text-xs text-zinc-500 uppercase font-bold mb-3">База Фанатов</h3>
+                        <div class="flex gap-2 mb-2">
+                            <input id="member-search" type="text" placeholder="Поиск никнейма..." class="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-2 text-sm text-white outline-none">
+                            <button onclick="searchMember()" class="bg-yellow-500 text-black px-3 rounded-lg font-bold">🔍</button>
+                        </div>
+                        <div id="member-result" class="hidden bg-zinc-800 p-3 rounded-lg border border-zinc-700 text-sm"></div>
+                    </div>
+
+                    <div class="bg-red-900/10 border border-red-500/30 p-4 rounded-xl text-center mt-8">
+                        <div class="text-xs text-red-400 uppercase tracking-widest mb-1">СМЕНА АКТИВНА</div>
+                        <div id="shift-timer" class="text-4xl font-mono font-bold text-white mb-4">00:00:00</div>
+                        
+                        <textarea id="handover-log" rows="2" placeholder="Комментарий к смене..." class="w-full bg-zinc-950 border border-red-500/30 rounded-xl p-3 text-sm text-white outline-none mb-3"></textarea>
+                        
+                        <button onclick="endShift()" class="w-full bg-red-600 hover:bg-red-500 text-white py-3 rounded-xl font-black uppercase tracking-widest shadow-lg shadow-red-900/40 active:scale-95 transition-transform">
+                            ⏹ ЗАВЕРШИТЬ
+                        </button>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div id="view-cabinet" class="tab-content space-y-6">
-            <h1 class="text-2xl font-bold">Кабинет</h1>
-            <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 text-center relative overflow-hidden">
-                <div class="w-20 h-20 bg-yellow-500 rounded-full mx-auto flex items-center justify-center text-3xl font-bold text-black border-4 border-zinc-800 mb-3" id="avatar">K</div>
-                <h2 class="text-xl font-bold" id="username">User</h2>
-                <span class="text-yellow-500 text-xs font-bold uppercase border border-yellow-500/30 px-2 py-1 rounded bg-yellow-500/10 mt-2 inline-block">Оператор (25%)</span>
-            </div>
-            
-            <div class="bg-zinc-900 rounded-2xl border border-zinc-800 p-4 space-y-3">
-                <div class="flex justify-between border-b border-zinc-800 pb-2">
-                    <span class="text-zinc-400">Выручка за месяц</span>
-                    <span class="text-white font-bold">$ 1,250.00</span>
+            <div id="view-plan" class="tab-content space-y-6">
+                <h1 class="text-2xl font-bold">План</h1>
+                <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800">
+                    <h3 class="text-xs text-zinc-500 uppercase font-bold mb-3">Топ Операторов</h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center bg-zinc-800/50 p-3 rounded-lg border border-yellow-500/30">
+                            <div class="flex items-center gap-2">🥇 <span class="font-bold">Alice</span></div>
+                            <span class="text-green-400 font-bold">$420</span>
+                        </div>
+                        <div class="flex justify-between items-center bg-zinc-800/50 p-3 rounded-lg">
+                            <div class="flex items-center gap-2">🥈 <span class="font-bold">Mike</span></div>
+                            <span class="text-green-400 font-bold">$310</span>
+                        </div>
+                        <div class="flex justify-between items-center bg-zinc-800/50 p-3 rounded-lg">
+                            <div class="flex items-center gap-2">🥉 <span class="font-bold text-yellow-500">Вы</span></div>
+                            <span class="text-green-400 font-bold" id="leaderboard-me">$0</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="
+            </div>
+
+            <div id="view-cabinet" class="tab-content space-y-6">
+                <h1 class="text-2xl font-bold">Кабинет</h1>
+                <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 text-center relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-500 via-yellow-200 to-yellow-500"></div>
+                    <div class="w-20 h-20 bg-yellow-500 rounded-full mx-auto flex items-center justify-center text-3xl font-bold text-black border-4 border-zinc-800 mb-3" id="avatar">K</div>
+                    <h2 class="text-xl font-bold" id="username">User</h2>
+                    <span class="text-yellow-500 text-xs font-bold uppercase border border-yellow-500/30 px-2 py-1 rounded bg-yellow-500/10 mt-2 inline-block">Оператор (25%)</span>
+                </div>
+                
+                <div class="bg-zinc-900 rounded-2xl border border-zinc-800 p-4 space-y-3">
+                    <div class="flex justify-between border-b border-zinc-800 pb-2">
+                        <span class="text-zinc-400">За месяц</span>
+                        <span class="text-white font-bold">$ 1,250.00</span>
+                    </div>
+                    <div class="bg-zinc-800 p-3 rounded-xl flex justify-between items-center mt-2">
+                        <span class="text-sm font-bold">К ВЫПЛАТЕ:</span>
+                        <span class="text-xl font-black text-white">$ 312.50</span>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <nav class="bg-zinc-950 border-t border-zinc-800 pb-safe mobile-container fixed bottom-0 left-0 right-0">
+            <div class="flex justify-around py-3">
+                <button onclick="goTab('studio', this)" class="nav-btn active flex flex-col items-center gap-1 w-16">
+                    <span class="text-xl">🎛</span>
+                    <span class="text-[9px] font-bold">Студия</span>
+                </button>
+                <button onclick="goTab('plan', this)" class="nav-btn flex flex-col items-center gap-1 w-16">
+                    <span class="text-xl">📅</span>
+                    <span class="text-[9px] font-bold">План</span>
+                </button>
+                <button onclick="goTab('cabinet', this)" class="nav-btn flex flex-col items-center gap-1 w-16">
+                    <span class="text-xl">👤</span>
+                    <span class="text-[9px] font-bold">Кабинет</span>
+                </button>
+            </div>
+        </nav>
+    </div>
+
+    <script>
+        // === ЛОГИКА ===
+        const tg = window.Telegram.WebApp;
+        let revenue = 0;
+        let goal = 100;
+        let startTime;
+        let timerInt;
+
+        // Данные
+        const membersDB = { "BigDaddy": "🐳 Кит (
