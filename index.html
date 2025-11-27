@@ -6,43 +6,172 @@
     <title>PRIMA CRM</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body { background-color: #18181b; color: #fff; font-family: -apple-system, sans-serif; overflow: hidden; }
-        .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
-        .glass { background: rgba(39, 39, 42, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        /* Скрытие экранов */
-        .screen { display: none; padding-bottom: 100px; animation: fadeIn 0.3s; }
-        .screen.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        /* Стили активной кнопки меню */
-        .nav-btn.active { color: #facc15; transform: translateY(-4px); }
-        .nav-btn.active svg { filter: drop-shadow(0 0 5px rgba(250, 204, 21, 0.5)); transform: scale(1.1); }
-        .nav-indicator { display: none; }
-        .nav-btn.active .nav-indicator { display: block; }
+        body { background-color: #18181b; color: #fff; font-family: -apple-system, sans-serif; height: 100vh; display: flex; flex-direction: column; margin: 0; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .glass { background: #27272a; border: 1px solid #3f3f46; }
         
-        /* Стили кнопок выбора */
-        .site-btn.active { background-color: #27272a; border-color: #facc15; box-shadow: 0 0 10px rgba(234, 179, 8, 0.2); }
-        .site-btn.active .site-letter { color: inherit; } 
-        .site-btn:not(.active) { opacity: 0.5; filter: grayscale(1); }
+        /* Кнопки выбора сайтов */
+        .site-card { transition: all 0.2s; border: 1px solid #3f3f46; background: #18181b; }
+        .site-card.active { border-color: #eab308; background: #27272a; box-shadow: 0 0 15px rgba(234, 179, 8, 0.1); }
+        .site-card.active .status-dot { background-color: #eab308; box-shadow: 0 0 8px #eab308; }
         
-        /* Переключатель табов */
-        .tab-btn.active { background-color: #3f3f46; color: white; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+        /* Табы */
+        .tab-content { display: none; height: 100%; overflow-y: auto; padding-bottom: 100px; }
+        .tab-content.active { display: block; }
+        
+        /* Навигация */
+        .nav-btn { color: #71717a; transition: all 0.2s; }
+        .nav-btn.active { color: #eab308; transform: translateY(-2px); }
     </style>
 </head>
-<body class="h-screen flex flex-col">
+<body>
 
-    <main id="app" class="flex-1 overflow-y-auto p-4 no-scrollbar">
-        
-        <div id="screen-studio" class="screen active space-y-6">
+    <main class="flex-1 overflow-y-auto p-4 no-scrollbar">
+
+        <div id="view-studio" class="tab-content active space-y-6">
+            
             <div class="glass p-4 rounded-2xl flex justify-between items-center">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-zinc-700 rounded-full flex items-center justify-center font-bold text-zinc-300">
-                        <i data-lucide="user"></i>
+                    <div class="w-10 h-10 bg-zinc-700 rounded-full flex items-center justify-center">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                     </div>
                     <div>
-                        <h2 className="font-bold text-lg leading-none">PRIMA</h2>
-                        <span class="text-xs text-zinc-500">Панель оператора</span>
+                        <h2 class="font-bold text-lg leading-none">PRIMA</h2>
+                        <span class="text-xs text-zinc-400">Панель оператора</span>
                     </div>
                 </div>
-                <div
+                <div class="bg-zinc-800 px-3 py-1 rounded-lg border border-zinc-700 text-green-400 font-mono font-bold">$ 0</div>
+            </div>
+
+            <div class="bg-zinc-900 rounded-2xl p-4 border border-zinc-800 space-y-4">
+                <div class="flex justify-between items-center">
+                    <span class="text-zinc-100 font-bold text-sm">🔐 Доступы</span>
+                    <span class="text-[10px] bg-zinc-800 px-2 py-1 rounded text-zinc-400">Личные</span>
+                </div>
+                <div class="space-y-1">
+                    <div class="flex items-center gap-2 text-xs text-zinc-400"><div class="w-1.5 h-1.5 rounded-full bg-yellow-500"></div>Chaturbate</div>
+                    <div class="flex gap-2">
+                        <input value="Operator_Login" disabled class="bg-zinc-950 border border-zinc-800 rounded px-3 py-3 text-xs text-zinc-500 flex-1">
+                        <div class="bg-zinc-950 border border-zinc-800 rounded px-3 py-3 text-xs text-zinc-500 w-16 flex justify-center items-center">***</div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="text-center text-zinc-500 text-xs mb-3 uppercase font-bold tracking-widest">Площадки</h3>
+                <div class="grid grid-cols-2 gap-3">
+                    
+                    <button onclick="toggleSite(this)" class="site-card active relative rounded-xl h-24 flex flex-col items-center justify-center gap-1">
+                        <div class="status-dot absolute top-3 right-3 w-1.5 h-1.5 rounded-full bg-zinc-700 transition-all"></div>
+                        <span class="text-3xl font-black text-yellow-500">C</span>
+                        <span class="text-[9px] uppercase font-bold text-zinc-400">Chaturbate</span>
+                    </button>
+
+                    <button onclick="toggleSite(this)" class="site-card active relative rounded-xl h-24 flex flex-col items-center justify-center gap-1">
+                        <div class="status-dot absolute top-3 right-3 w-1.5 h-1.5 rounded-full bg-zinc-700 transition-all"></div>
+                        <span class="text-3xl font-black text-red-500">S</span>
+                        <span class="text-[9px] uppercase font-bold text-zinc-400">Stripchat</span>
+                    </button>
+
+                    <button onclick="toggleSite(this)" class="site-card relative rounded-xl h-24 flex flex-col items-center justify-center gap-1 opacity-70">
+                        <span class="text-3xl font-black text-blue-500">C</span>
+                        <span class="text-[9px] uppercase font-bold text-zinc-500">CamSoda</span>
+                    </button>
+
+                     <button onclick="toggleSite(this)" class="site-card relative rounded-xl h-24 flex flex-col items-center justify-center gap-1 opacity-70">
+                        <span class="text-3xl font-black text-pink-500">C</span>
+                        <span class="text-[9px] uppercase font-bold text-zinc-500">Cum4K</span>
+                    </button>
+                </div>
+            </div>
+
+            <button class="w-full bg-yellow-500 hover:bg-yellow-400 active:scale-95 transition-transform text-black py-4 rounded-xl font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-yellow-900/20">
+                <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                Начать смену
+            </button>
+        </div>
+
+        <div id="view-plan" class="tab-content space-y-6">
+            <h1 class="text-2xl font-bold">План</h1>
+            <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 text-center">
+                <span class="text-zinc-500 text-sm">Календарь загружается...</span>
+            </div>
+             <div class="space-y-3">
+                <h3 class="font-bold text-zinc-400 text-sm">Задачи</h3>
+                <div class="bg-zinc-800 p-3 rounded-xl border border-zinc-700 flex items-center gap-3">
+                    <div class="w-5 h-5 rounded-full border-2 border-zinc-600"></div>
+                    <div><div class="text-sm font-bold">Снять TikTok</div><div class="text-xs text-zinc-500">Тренд</div></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-cabinet" class="tab-content space-y-6">
+            <h1 class="text-2xl font-bold">Кабинет</h1>
+            <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 text-center">
+                <div class="w-20 h-20 bg-yellow-500 rounded-full mx-auto flex items-center justify-center text-3xl font-bold text-black mb-3">K</div>
+                <h2 class="text-xl font-bold">keikiiiii</h2>
+                <span class="text-yellow-500 text-xs font-bold uppercase border border-yellow-500/30 px-2 py-1 rounded bg-yellow-500/10 mt-2 inline-block">Оператор</span>
+            </div>
+            
+            <div id="admin-area" class="hidden">
+                 <button class="w-full bg-red-900/30 border border-red-500 text-red-400 p-4 rounded-xl font-bold flex justify-center gap-2">
+                    🛠 АДМИН ПАНЕЛЬ
+                 </button>
+            </div>
+        </div>
+
+    </main>
+
+    <nav class="bg-zinc-950 border-t border-zinc-800 pb-safe">
+        <div class="flex justify-around py-3">
+            <button onclick="goTab('studio', this)" class="nav-btn active flex flex-col items-center gap-1 w-16">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+                <span class="text-[10px] font-bold">Студия</span>
+            </button>
+            
+            <button onclick="goTab('plan', this)" class="nav-btn flex flex-col items-center gap-1 w-16">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                <span class="text-[10px] font-bold">План</span>
+            </button>
+
+            <button onclick="goTab('cabinet', this)" class="nav-btn flex flex-col items-center gap-1 w-16">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <span class="text-[10px] font-bold">Кабинет</span>
+            </button>
+        </div>
+    </nav>
+
+    <script>
+        // Простая логика переключения (Без React, без библиотек)
+        function goTab(id, btn) {
+            // Скрыть все экраны
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            // Показать выбранный
+            document.getElementById('view-' + id).classList.add('active');
+            
+            // Обновить кнопки
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        function toggleSite(btn) {
+            btn.classList.toggle('active');
+            btn.classList.toggle('opacity-70');
+        }
+
+        // Инициализация Telegram
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+        tg.setHeaderColor('#18181b');
+
+        // Проверка Админа
+        const ADMIN_ID = 957837867;
+        const user = tg.initDataUnsafe?.user;
+        if (user && user.id === ADMIN_ID) {
+            document.getElementById('admin-area').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
